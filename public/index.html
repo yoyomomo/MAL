@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Jikan Anime API</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: rgba(186, 211, 252, 0.61);
+            padding-left: 10vw;
+            padding-right: 10vw;
+            text-align: center;
+            display: grid;
+
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        h1,
+        p {
+            text-align: left;
+
+        }
+
+        #profile {
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            padding: 50px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 50px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+
+<body>
+    <h1>Jikan Anime API</h1>
+    <p>A small portion of anime from MyAnimeList.</p>
+
+    <div id="profile"></div>
+    <div id="download"></div>
+    <div id="errors"></div>
+
+
+    <script>
+        // Read more about JavaScript Fetch here:
+        // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+
+
+        const fetchMultiple = async () => {
+            let response = await fetch("MAL")
+            ///  console.log(response)
+            if (response.ok) {
+                return response.json()
+            } else {
+                var p = document.createElement("p");
+                p.innerHTML = response.url + '<br/>' +
+                    "Error: " + response.status;
+                document.querySelector('#errors').appendChild(p);
+            }
+        }
+
+        const display = (jsonArray) => {
+            console.log(jsonArray)
+            for (json of jsonArray) {
+
+
+                var d = document.createElement("div");
+                d.innerHTML =
+
+                    '<h3>' + json.title + '</h3>' +
+                    '<img src="' + json.image_url + '"/>' +
+                    '<p><b>Title:</b> ' + json.title + '</p>' +
+                    '<p><b>Japanese Title:</b> ' + json.title_japanese + '</p>' +
+                    '<p><b>English Title:</b> ' + json.title_english + '</p>' +
+                    '<p><b>Episodes:</b> ' + json.episodes + '</p>' +
+                    '<p><b>Synopsis:</b> ' + json.synopsis + '</p>';
+                document.querySelector('#profile').appendChild(d);
+            }
+        }
+
+        const download = (json) => {
+            var a = document.createElement("a");
+            a.innerHTML = "Download JSON for " + json.name;
+            var file = new Blob([JSON.stringify(json)], {
+                type: 'application/json'
+            });
+            a.href = URL.createObjectURL(file);
+            a.download = json.name + '_data.json';
+            document.querySelector('#download').appendChild(a);
+        }
+
+        fetchMultiple().then(data => {
+            if (data) {
+                display(data)
+                //  download( data )
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>
